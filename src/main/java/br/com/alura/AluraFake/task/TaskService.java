@@ -21,8 +21,45 @@ public class TaskService {
     public CourseRepository courseRepository;
 
     public void createTask(NewTaskDTO newTaskDTO) {
+        validateTask(newTaskDTO);
 
+        Course course = courseRepository.findById(newTaskDTO.getCourseId()).orElseThrow(() ->
+                new ApplicationRulesException(List.of(new ErrorItemDTO("courseId", "Curso não encontrado."))));
 
+        Task task;
+        switch (newTaskDTO.getType()) {
+            case OPEN_TEXT:
+                task = new OpenTextTask();
+                break;
+            case SINGLE_CHOICE:
+                task = new SingleChoiceTask();
+                break;
+            case MULTIPLE_CHOICE:
+                task = new MultipleChoiceTask();
+                break;
+            default:
+                throw new ApplicationRulesException(
+                        List.of(new ErrorItemDTO("type", "Tipo de tarefa inválido."))
+                );
+        }
+        task.setStatement(newTaskDTO.getStatement());
+        task.setCourse(course);
+        task.setOrder(newTaskDTO.getOrder());
+        task.setType(newTaskDTO.getType());
+
+        task = taskRepository.save(task);
+
+        if (newTaskDTO.getOptions() != null && !newTaskDTO.getOptions().isEmpty()) {
+            List<Option> options = new ArrayList<>();
+            for (NewOptionDTO dto : newTaskDTO.getOptions()) {
+                Option option = new Option();
+                option.setTask(task);
+                option.setOption(dto.getOption());
+                option.setIsCorrect(dto.isCorrect());
+                options.add(option);
+            }
+            optionRepository.saveAll(options);
+        }
     }
 
     public void validateTask(NewTaskDTO newTaskDTO) {

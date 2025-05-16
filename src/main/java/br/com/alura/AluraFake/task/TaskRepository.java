@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TaskRepository extends JpaRepository<Long, Task> {
+public interface TaskRepository extends JpaRepository<Task, Long> {
     boolean existsByStatementAndCourseId(String statement, Long courseId);
 
     List<Task> findByCourseOrderByOrderAsc(Course course);
