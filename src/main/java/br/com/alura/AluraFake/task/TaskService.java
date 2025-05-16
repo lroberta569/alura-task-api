@@ -3,9 +3,11 @@ package br.com.alura.AluraFake.task;
 import br.com.alura.AluraFake.course.Course;
 import br.com.alura.AluraFake.course.CourseRepository;
 import br.com.alura.AluraFake.course.Status;
+import br.com.alura.AluraFake.util.ApplicationRulesException;
 import br.com.alura.AluraFake.util.ErrorItemDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.ErrorResponseException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +15,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class TaskService {
-    public final TaskRepository taskRepository;
-    public final OptionRepository optionRepository;
+    public TaskRepository taskRepository;
+    public OptionRepository optionRepository;
     public CourseRepository courseRepository;
 
     public void createTask(NewTaskDTO newTaskDTO) {
@@ -22,7 +24,7 @@ public class TaskService {
 
     }
 
-    public validateTask(NewTaskDTO newTaskDTO){
+    public void validateTask(NewTaskDTO newTaskDTO){
         List<ErrorItemDTO> errors = new ArrayList<>();
 
         if(newTaskDTO.getStatement().length() <4 || newTaskDTO.getStatement().length() > 255){
@@ -32,7 +34,10 @@ public class TaskService {
             errors.add(new ErrorItemDTO("order","A ordem deve ser maior que 0."));
         }
 
-        Course course = courseRepository.findById(newTaskDTO.getCourseId()).orElseThrow(() -> new ErrorItemDTO("courseId", "Curso não encontrado.")));
+        Course course = courseRepository.findById(newTaskDTO.getCourseId())
+                .orElseThrow(() -> new ApplicationRulesException(
+                        List.of(new ErrorItemDTO("courseId", "Curso não encontrado."))
+                ));
 
         if(!course.getStatus().equals(Status.BUILDING)){
             errors.add(new ErrorItemDTO("courseId",  "Atividades só podem ser adicionadas em cursos com status BUILDING."));
@@ -50,7 +55,7 @@ public class TaskService {
         }
         if(newTaskDTO.getType() == Type.OPEN_TEXT){
             if(newTaskDTO.getOptions() != null && !newTaskDTO.getOptions().isEmpty()){
-                errors.add(new ErrorItemDTO("options", "Atividade OpenText não pode ter opções"));                        "        }")
+                errors.add(new ErrorItemDTO("options", "Atividade OpenText não pode ter opções"));
             }
         } else if (newTaskDTO.getType() == Type.SINGLE_CHOICE) {
             validateSingleChoice(newTaskDTO);
