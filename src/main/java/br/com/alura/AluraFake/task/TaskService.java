@@ -68,6 +68,25 @@ public class TaskService {
     }
 
     private void validateMultipleChoice(NewTaskDTO newTaskDTO) {
+        List<NewOptionDTO> options = newTaskDTO.getOptions();
+        List<ErrorItemDTO> errors = new ArrayList<>();
+
+        if (options == null || options.size() < 3 || options.size() > 5) {
+            errors.add(new ErrorItemDTO("options", "MultipleChoice deve ter entre 3 e 5 opções."));
+        }
+
+        long correctCount = options.stream().filter(NewOptionDTO::isCorrect).count();
+        long incorrectCount = options.size() - correctCount;
+
+        if (correctCount < 2 || incorrectCount < 1) {
+            errors.add(new ErrorItemDTO("options", "MultipleChoice deve ter pelo menos 2 corretas e 1 incorreta."));
+        }
+
+        validateOptionTexts(options, newTaskDTO.getStatement(), errors);
+
+        if (!errors.isEmpty()) {
+            throw new ApplicationRulesException(errors);
+        }
     }
 
     private void validateSingleChoice(NewTaskDTO newTaskDTO) {
@@ -83,28 +102,32 @@ public class TaskService {
             errors.add(new ErrorItemDTO("options", "SingleChoice deve ter exatamente 1 opção correta."));
         }
 
-        Set<String> uniqueTexts = new HashSet<>();
-        if (options != null) {
-            for (int i = 0; i < options.size(); i++) {
-                NewOptionDTO option = options.get(i);
-                String optionText = option.getOption();
+        validateOptionTexts(options, newTaskDTO.getStatement(), errors);
 
-                if (optionText.length() < 4 || optionText.length() > 80) {
-                    errors.add(new ErrorItemDTO("options[" + i + "]", "Texto da opção deve ter entre 4 e 80 caracteres."));
-                }
-                if (optionText.equalsIgnoreCase(newTaskDTO.getStatement())) {
-                    errors.add(new ErrorItemDTO("options[" + i + "]", "Opção não pode ser igual ao enunciado."));
-                }
-                if (!uniqueTexts.add(optionText)) {
-                    errors.add(new ErrorItemDTO("options[" + i + "]", "Todas as opções devem ter textos diferentes."));
-
-                }
-            }
-        }
         if (!errors.isEmpty()) {
             throw new ApplicationRulesException(errors);
         }
 
+    }
+
+    public void validateOptionTexts(List<NewOptionDTO> options, String statement, List<ErrorItemDTO> errors) {
+        Set<String> uniqueTexts = new HashSet<>();
+
+        for (int i = 0; i < options.size(); i++) {
+            String text = options.get(i).getOption();
+
+            if (text.length() < 4 || text.length() > 80) {
+                errors.add(new ErrorItemDTO("options[" + i + "]", "Texto da opção deve ter entre 4 e 80 caracteres."));
+            }
+
+            if (text.equalsIgnoreCase(statement)) {
+                errors.add(new ErrorItemDTO("options[" + i + "]", "Opção não pode ser igual ao enunciado."));
+            }
+
+            if (!uniqueTexts.add(text)) {
+                errors.add(new ErrorItemDTO("options[" + i + "]", "Todas as opções devem ter textos diferentes."));
+            }
+        }
     }
 }
 
