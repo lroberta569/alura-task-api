@@ -62,7 +62,7 @@ public class TaskService {
                 Option option = new Option();
                 option.setTask(task);
                 option.setOption(dto.getOption());
-                option.setIsCorrect(dto.isCorrect());
+                option.setCorrect(dto.isCorrect());
                 options.add(option);
             }
             optionRepository.saveAll(options);

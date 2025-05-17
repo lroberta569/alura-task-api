@@ -10,9 +10,6 @@ import org.hibernate.validator.constraints.Length;
 
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
 public class NewTaskDTO {
 
     @NotBlank
@@ -26,4 +23,51 @@ public class NewTaskDTO {
     private Type type;
     private List<NewOptionDTO> options;
 
+    public NewTaskDTO(String statement, List<NewOptionDTO> options, Type type, Long courseId, Integer order) {
+        this.statement = statement;
+        this.options = options;
+        this.type = type;
+        this.courseId = courseId;
+        this.order = order;
+    }
+
+    public String getStatement() {
+        return statement;
+    }
+
+    public void setStatement(String statement) {
+        this.statement = statement;
+    }
+
+    public List<NewOptionDTO> getOptions() {
+        return options;
+    }
+
+    public void setOptions(List<NewOptionDTO> options) {
+        this.options = options;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    public @NotNull Long getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(@NotNull Long courseId) {
+        this.courseId = courseId;
+    }
+
+    public @NotNull @Min(1) Integer getOrder() {
+        return order;
+    }
+
+    public void setOrder(@NotNull @Min(1) Integer order) {
+        this.order = order;
+    }
 }

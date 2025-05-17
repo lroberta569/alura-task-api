@@ -9,10 +9,6 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Option {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,4 +22,42 @@ public class Option {
     @JoinColumn(name = "task_id", nullable = false)
     private Task task;
 
+    public Option(Long id, Task task, Boolean isCorrect, String option) {
+        this.id = id;
+        this.task = task;
+        this.isCorrect = isCorrect;
+        this.option = option;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Task getTask() {
+        return task;
+    }
+
+    public void setTask(Task task) {
+        this.task = task;
+    }
+
+    public Boolean getCorrect() {
+        return isCorrect;
+    }
+
+    public void setCorrect(Boolean correct) {
+        isCorrect = correct;
+    }
+
+    public @Length(min = 4, max = 80) String getOption() {
+        return option;
+    }
+
+    public void setOption(@Length(min = 4, max = 80) String option) {
+        this.option = option;
+    }
 }
