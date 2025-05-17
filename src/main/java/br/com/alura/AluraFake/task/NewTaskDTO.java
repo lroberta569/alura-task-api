@@ -3,9 +3,6 @@ package br.com.alura.AluraFake.task;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 import java.util.List;
@@ -55,19 +52,19 @@ public class NewTaskDTO {
         this.type = type;
     }
 
-    public @NotNull Long getCourseId() {
+    public Long getCourseId() {
         return courseId;
     }
 
-    public void setCourseId(@NotNull Long courseId) {
+    public void setCourseId(Long courseId) {
         this.courseId = courseId;
     }
 
-    public @NotNull @Min(1) Integer getOrder() {
+    public Integer getOrder() {
         return order;
     }
 
-    public void setOrder(@NotNull @Min(1) Integer order) {
+    public void setOrder(Integer order) {
         this.order = order;
     }
 }

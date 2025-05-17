@@ -22,13 +22,13 @@ public class NewOptionDTO {
 
     public String setOption() {
         return option;
-   }
+    }
 
     public boolean isCorrect() {
         return isCorrect;
     }
 
     public Boolean setCorrect() {
-       return isCorrect;
+        return isCorrect;
     }
 }

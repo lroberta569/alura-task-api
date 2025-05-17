@@ -64,5 +64,7 @@ public class Course {
         return publishedAt;
     }
 
-    public void setPublishedAt(LocalDateTime publishedAt) {}
+    public void setPublishedAt(LocalDateTime publishedAt) {
+        this.publishedAt = publishedAt;
+    }
 }

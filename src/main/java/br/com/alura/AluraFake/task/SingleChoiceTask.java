@@ -13,8 +13,8 @@ public class SingleChoiceTask extends Task {
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Option> options;
 
-    public SingleChoiceTask() {
 
+    public SingleChoiceTask() {
     }
 
     public List<Option> getOptions() {

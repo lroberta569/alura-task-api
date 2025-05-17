@@ -3,12 +3,11 @@ package br.com.alura.AluraFake.course;
 import br.com.alura.AluraFake.task.Task;
 import br.com.alura.AluraFake.task.TaskRepository;
 import br.com.alura.AluraFake.task.Type;
-import br.com.alura.AluraFake.user.UserRepository;
 import br.com.alura.AluraFake.util.ApplicationRulesException;
 import br.com.alura.AluraFake.util.ErrorItemDTO;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,13 +17,11 @@ import java.util.stream.Collectors;
 @Service
 public class CourseService {
     private final CourseRepository courseRepository;
-    private final UserRepository userRepository;
     private final TaskRepository taskRepository;
 
     @Autowired
-    public CourseService(CourseRepository courseRepository, UserRepository userRepository, TaskRepository taskRepository) {
+    public CourseService(CourseRepository courseRepository, TaskRepository taskRepository) {
         this.courseRepository = courseRepository;
-        this.userRepository = userRepository;
         this.taskRepository = taskRepository;
     }
 

@@ -1,32 +1,25 @@
 package br.com.alura.AluraFake.task;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 @Entity
+@Table(name = "task_option")
 public class Option {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Length(min = 4, max = 80)
-    @Column(nullable = false)
+    @Column(name = "option_text", nullable = false)
     private String option;
-    @Column(nullable = false)
+    @Column(name = "is_correct", nullable = false)
     private Boolean isCorrect;
     @ManyToOne
     @JoinColumn(name = "task_id", nullable = false)
     private Task task;
 
-    public Option(Long id, Task task, Boolean isCorrect, String option) {
-        this.id = id;
-        this.task = task;
-        this.isCorrect = isCorrect;
-        this.option = option;
+    public Option() {
+
     }
 
     public Long getId() {
@@ -53,11 +46,11 @@ public class Option {
         isCorrect = correct;
     }
 
-    public @Length(min = 4, max = 80) String getOption() {
+    public String getOption() {
         return option;
     }
 
-    public void setOption(@Length(min = 4, max = 80) String option) {
+    public void setOption(String option) {
         this.option = option;
     }
 }

@@ -17,22 +17,14 @@ public abstract class Task {
     @Length(min = 4, max = 255)
     private String statement;
     @Min(value = 1)
+    @Column(name = "`order`")
     private Integer order;
     @ManyToOne
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
     @Enumerated(EnumType.STRING)
     private Type type;
-
-    public Task(Long id, String statement, Integer order, Course course, Type type) {
-        this.id = id;
-        this.statement = statement;
-        this.order = order;
-        this.course = course;
-        this.createdAt = LocalDateTime.now();
-        this.type = type;
-    }
 
     public Task() {
 
