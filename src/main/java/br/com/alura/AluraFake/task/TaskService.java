@@ -5,7 +5,7 @@ import br.com.alura.AluraFake.course.CourseRepository;
 import br.com.alura.AluraFake.course.Status;
 import br.com.alura.AluraFake.util.ApplicationRulesException;
 import br.com.alura.AluraFake.util.ErrorItemDTO;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,11 +14,18 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-@RequiredArgsConstructor
 public class TaskService {
+
     public TaskRepository taskRepository;
     public OptionRepository optionRepository;
     public CourseRepository courseRepository;
+
+    @Autowired
+    public TaskService(TaskRepository taskRepository, OptionRepository optionRepository, CourseRepository courseRepository) {
+        this.taskRepository = taskRepository;
+        this.optionRepository = optionRepository;
+        this.courseRepository = courseRepository;
+    }
 
     public void createTask(NewTaskDTO newTaskDTO) {
         validateTask(newTaskDTO);
@@ -86,11 +93,14 @@ public class TaskService {
         }
 
         List<Task> existingTask = taskRepository.findByCourseOrderByOrderAsc(course);
-        for (Task task : existingTask) {
-            if (task.getOrder() >= newTaskDTO.getOrder()) {
-                task.setOrder(newTaskDTO.getOrder() + 1);
-            }
+
+        int expectedNextOrder = existingTask.size() + 1;
+        if (newTaskDTO.getOrder() > expectedNextOrder) {
+            errors.add(new ErrorItemDTO("order", "A ordem das atividades deve ser contínua. Próxima ordem esperada: " + expectedNextOrder));
         }
+
+        resequenceTasks(course, newTaskDTO.getOrder());
+
         if (newTaskDTO.getType() == Type.OPEN_TEXT) {
             if (newTaskDTO.getOptions() != null && !newTaskDTO.getOptions().isEmpty()) {
                 errors.add(new ErrorItemDTO("options", "Atividade OpenText não pode ter opções"));
@@ -102,6 +112,27 @@ public class TaskService {
         } else {
             errors.add(new ErrorItemDTO("type", "Tipo de atividade inválido"));
         }
+
+        if (!errors.isEmpty()) {
+            throw new ApplicationRulesException(errors);
+        }
+    }
+
+    public void resequenceTasks(Course course, Integer newOrder) {
+        List<Task> existingTasks = taskRepository.findByCourseOrderByOrderAsc(course);
+        List<Task> updatedTasks = new ArrayList<>();
+
+        for (Task task : existingTasks) {
+            if (task.getOrder() >= newOrder) {
+                task.setOrder(task.getOrder() + 1);
+                updatedTasks.add(task);
+            }
+        }
+
+        if (!updatedTasks.isEmpty()) {
+            taskRepository.saveAll(updatedTasks);
+        }
+
     }
 
     private void validateMultipleChoice(NewTaskDTO newTaskDTO) {
