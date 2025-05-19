@@ -27,6 +27,13 @@ public class TaskService {
         this.courseRepository = courseRepository;
     }
 
+    /**
+     * Cria uma nova tarefa com base nos dados recebidos via DTO.
+     * Realiza a validação dos dados, instancia a tarefa conforme o tipo e salva as opções
+     *
+     * @param newTaskDTO DTO contendo os dados da nova tarefa
+     * @throws ApplicationRulesException se houver erros de validação
+     */
     public void createTask(NewTaskDTO newTaskDTO) {
         validateTask(newTaskDTO);
 
@@ -69,6 +76,13 @@ public class TaskService {
         }
     }
 
+    /**
+     * Valida os dados fornecidos para criação de uma nova tarefa.
+     * Inclui validações de campos obrigatórios, tipo da tarefa, ordem sequencial e opções.
+     *
+     * @param newTaskDTO DTO com os dados da tarefa a ser validada
+     * @throws ApplicationRulesException se houver qualquer erro de validação
+     */
     public void validateTask(NewTaskDTO newTaskDTO) {
         List<ErrorItemDTO> errors = new ArrayList<>();
 
@@ -118,6 +132,13 @@ public class TaskService {
         }
     }
 
+    /**
+     * Atualiza a ordem das tarefas existentes em um curso, garantindo que a nova tarefa se encaixe corretamente
+     * sem que haja conflitos de ordenação.
+     *
+     * @param course curso ao qual as tarefas pertencem
+     * @param newOrder ordem desejada para a nova tarefa
+     */
     public void resequenceTasks(Course course, Integer newOrder) {
         List<Task> existingTasks = taskRepository.findByCourseOrderByOrderAsc(course);
         List<Task> updatedTasks = new ArrayList<>();
@@ -135,6 +156,13 @@ public class TaskService {
 
     }
 
+    /**
+     * Valida uma tarefa do tipo MultipleChoice, incluindo a quantidade de opções,
+     * número mínimo de corretas e incorretas, e a qualidade dos textos.
+     *
+     * @param newTaskDTO DTO com os dados da tarefa MultipleChoice
+     * @throws ApplicationRulesException se as regras de validação forem violadas
+     */
     private void validateMultipleChoice(NewTaskDTO newTaskDTO) {
         List<NewOptionDTO> options = newTaskDTO.getOptions();
         List<ErrorItemDTO> errors = new ArrayList<>();
@@ -157,6 +185,13 @@ public class TaskService {
         }
     }
 
+    /**
+     * Valida uma tarefa do tipo SingleChoice, garantindo quantidade correta de opções,
+     * uma única opção correta, e textos válidos.
+     *
+     * @param newTaskDTO DTO com os dados da tarefa SingleChoice
+     * @throws ApplicationRulesException se as regras de validação forem violadas
+     */
     private void validateSingleChoice(NewTaskDTO newTaskDTO) {
         List<NewOptionDTO> options = newTaskDTO.getOptions();
         List<ErrorItemDTO> errors = new ArrayList<>();
@@ -178,6 +213,14 @@ public class TaskService {
 
     }
 
+    /**
+     * Valida o conteúdo textual das opções da tarefa, garantindo tamanho adequado,
+     * unicidade, e que não sejam iguais ao enunciado.
+     *
+     * @param options lista de opções da tarefa
+     * @param statement enunciado da tarefa
+     * @param errors lista acumulada de erros de validação
+     */
     public void validateOptionTexts(List<NewOptionDTO> options, String statement, List<ErrorItemDTO> errors) {
         Set<String> uniqueTexts = new HashSet<>();
 

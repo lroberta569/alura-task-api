@@ -25,6 +25,14 @@ public class CourseService {
         this.taskRepository = taskRepository;
     }
 
+    /**
+     * Publica um curso, desde que ele esteja com o status BUILDING e atenda às regras:
+     * - Deve possuir pelo menos uma tarefa de cada tipo (OpenText, SingleChoice, MultipleChoice)
+     * - As tarefas devem estar ordenadas de forma contínua iniciando do 1
+     *
+     * @param courseId ID do curso a ser publicado
+     * @throws ApplicationRulesException se as regras de publicação não forem atendidas
+     */
     @Transactional
     public void publishCourse(Long courseId) {
         Course course = courseRepository.findById(courseId).orElseThrow(() ->
@@ -49,16 +57,27 @@ public class CourseService {
         courseRepository.save(course);
     }
 
+    /**
+     * Verifica se a lista de tarefas contém ao menos uma tarefa de cada tipo (OpenText, SingleChoice, MultipleChoice).
+     *
+     * @param tasks lista de tarefas associadas ao curso
+     * @return true se todos os tipos estiverem presentes, false caso contrário
+     */
     private boolean hasAllTypes(List<Task> tasks) {
         return tasks.stream().map(Task::getType).collect(Collectors.toSet())
                 .containsAll(Set.of(Type.OPEN_TEXT, Type.SINGLE_CHOICE, Type.MULTIPLE_CHOICE));
     }
 
+    /**
+     * Verifica se a lista de tarefas está ordenada de forma contínua, começando em 1.
+     *
+     * @param tasks lista de tarefas associadas ao curso
+     * @return true se a ordem for contínua e iniciar em 1, false caso contrário
+     */
     private boolean isSequentialOrder(List<Task> tasks) {
         for (int i = 0; i < tasks.size(); i++) {
             if (!tasks.get(i).getOrder().equals(i + 1)) return false;
         }
         return true;
     }
-
 }
