@@ -73,7 +73,7 @@ public class TaskService {
         List<ErrorItemDTO> errors = new ArrayList<>();
 
         if (newTaskDTO.getStatement().length() < 4 || newTaskDTO.getStatement().length() > 255) {
-            errors.add(new ErrorItemDTO("stratement", "O enunciado deve ter entre 4 e 255 caracteres."));
+            errors.add(new ErrorItemDTO("statement", "O enunciado deve ter entre 4 e 255 caracteres."));
         }
         if (newTaskDTO.getOrder() == null || newTaskDTO.getOrder() < 1) {
             errors.add(new ErrorItemDTO("order", "A ordem deve ser maior que 0."));

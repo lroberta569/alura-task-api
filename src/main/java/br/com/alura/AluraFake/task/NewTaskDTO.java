@@ -10,10 +10,10 @@ import java.util.List;
 public class NewTaskDTO {
 
     @NotBlank
-    @Length(min = 4, max = 255)
+    @Length(min = 4, max = 255, message = "O enunciado deve ter entre 4 e 255 caracteres.")
     private String statement;
     @NotNull
-    @Min(1)
+    @Min(value = 1, message = "A ordem deve ser maior que 0.")
     private Integer order;
     @NotNull
     private Long courseId;
@@ -26,6 +26,10 @@ public class NewTaskDTO {
         this.type = type;
         this.courseId = courseId;
         this.order = order;
+    }
+
+    public NewTaskDTO() {
+
     }
 
     public String getStatement() {

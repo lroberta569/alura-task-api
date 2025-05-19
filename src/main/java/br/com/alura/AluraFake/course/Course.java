@@ -22,7 +22,8 @@ public class Course {
     private LocalDateTime publishedAt;
 
     @Deprecated
-    public Course(){}
+    public Course() {
+    }
 
     public Course(String title, String description, User instructor) {
         Assert.isTrue(instructor.isInstructor(), "Usuario deve ser um instrutor");
@@ -30,6 +31,10 @@ public class Course {
         this.instructor = instructor;
         this.description = description;
         this.status = Status.BUILDING;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Long getId() {
@@ -50,6 +55,10 @@ public class Course {
 
     public User getInstructor() {
         return instructor;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getDescription() {

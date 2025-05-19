@@ -1,19 +1,28 @@
 package br.com.alura.AluraFake.course;
 
-import br.com.alura.AluraFake.user.*;
+import br.com.alura.AluraFake.user.Role;
+import br.com.alura.AluraFake.user.User;
+import br.com.alura.AluraFake.user.UserRepository;
+import br.com.alura.AluraFake.util.ApplicationRulesException;
+import br.com.alura.AluraFake.util.ErrorItemDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CourseController.class)
 class CourseControllerTest {
@@ -26,6 +35,8 @@ class CourseControllerTest {
     private CourseRepository courseRepository;
     @Autowired
     private ObjectMapper objectMapper;
+    @MockBean
+    private CourseService courseService;
 
     @Test
     void newCourseDTO__should_return_bad_request_when_email_is_invalid() throws Exception {
@@ -111,4 +122,28 @@ class CourseControllerTest {
                 .andExpect(jsonPath("$[2].description").value("Curso de spring"));
     }
 
+    @Test
+    void publishCourse_shouldReturnOk() throws Exception {
+        doNothing().when(courseService).publishCourse(Mockito.anyLong());
+
+        mockMvc.perform(post("/course/1/publish"))
+                .andExpect(status().isOk());
+
+        verify(courseService).publishCourse(1L);
+    }
+
+    @Test
+    void publishCourse_shouldReturnBadRequest_whenApplicationRulesExceptionThrown() throws Exception {
+        Long courseId = 1L;
+
+        List<ErrorItemDTO> errors = List.of(new ErrorItemDTO("status", "Curso só pode ser publicado se estiver com status BUILDING"));
+
+        doThrow(new ApplicationRulesException(errors)).when(courseService).publishCourse(courseId);
+
+        mockMvc.perform(post("/course/{id}/publish", courseId))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$[0].field").value("status"))
+                .andExpect(jsonPath("$[0].message").value("Curso só pode ser publicado se estiver com status BUILDING"));
+    }
 }
+

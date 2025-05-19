@@ -9,7 +9,7 @@ public class Option {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Length(min = 4, max = 80)
+    @Length(min = 4, max = 80, message = "Texto da opção deve ter entre 4 e 80 caracteres.")
     @Column(name = "option_text", nullable = false)
     private String option;
     @Column(name = "is_correct", nullable = false)
